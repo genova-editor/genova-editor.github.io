@@ -1,0 +1,124 @@
+/*------------------------------------*\
+  ASSETS AND BUILDUP
+\*------------------------------------*/
+
+@font-face {
+    font-family: 'Genova';
+    src: url('./assets/fonts/Genova-30.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 300;
+}
+
+@import 'include-media';
+@import 'poly-fluid-sizing';
+
+/*------------------------------------*\
+  VARIABLES
+\*------------------------------------*/
+
+:root {
+    --color: black;
+    --margin: 1rem;
+
+    --ui-width: 18rem;
+
+    @include media("<=tablet") {
+        --ui-width: 40vw;
+    }
+}
+
+$breakpoints: (phone: 320px, tablet: 880px, desktop: 1024px);
+
+/*------------------------------------*\
+  GENERAL RULES
+\*------------------------------------*/
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+    @include poly-fluid-sizing('font-size', (320px: 18px, 600px:18px, 1400px:18px, 1920px:18px));
+    font-family: 'Geneva';
+}
+
+body {
+    color: var(--color);
+    margin: var(--margin);
+}
+
+body * {
+    box-sizing: border-box;
+}
+
+/*------------------------------------*\
+  UI
+\*------------------------------------*/
+
+#options {
+    position: fixed;
+    width: var(--ui-width);
+    height: 100vh;
+    left: 0;
+    top: 0;
+    overflow: scroll;
+    padding: 2rem;
+    margin: 0;
+    background-color: white;
+    z-index: 1;
+
+    h2 {
+        font-size: 1rem;
+        font-weight: 500;
+        text-align: center;
+        margin-top:3rem;
+    }
+    h2:first-of-type{
+        margin-top:0;
+    }
+    h2:last-of-type{
+        margin-top:6rem;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            padding: 0;
+            margin: 0;
+        }
+    }
+
+    input {
+        width: 100%;
+        padding:0.5rem 0;
+    }
+    button{
+        width:100%;
+        padding:0.1rem 0;
+        margin:0.5rem 0;
+    }
+}
+
+/*------------------------------------*\
+  GLYPHS
+\*------------------------------------*/
+
+#glyphs {
+    position: relative;
+    display: flex;
+    width: 100%;
+    padding-left: var(--ui-width);
+    z-index: 0;
+    flex-flow: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items:flex-start;
+
+
+}

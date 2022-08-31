@@ -26,6 +26,8 @@ names.forEach((n,id) => {
 
 })
 
+console.log(names);
+
 
 const scale = constables().scale;
 const parent = document.getElementById('glyphs');

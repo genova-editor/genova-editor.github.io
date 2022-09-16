@@ -11,10 +11,10 @@ export function exportglyphs(glyphs) {
 
 }
 
-function routes(glyphs){
+function routes(glyphs) {
 
     let button = document.getElementById('export-svg');
-    button.addEventListener('click',() =>{
+    button.addEventListener('click', () => {
 
         cleanglyphs(glyphs);
         createzip(glyphs);
@@ -23,11 +23,11 @@ function routes(glyphs){
 
 }
 
-function cleanglyphs(glyphs){
+function cleanglyphs(glyphs) {
 
-    glyphs.forEach(glyph =>{
+    glyphs.forEach(glyph => {
 
-        if (glyph.trace.length){
+        if (glyph.trace.length) {
 
             glyph.path.children.forEach(path => {
 
@@ -42,10 +42,14 @@ function cleanglyphs(glyphs){
 }
 
 
-function createzip(glyphs){
+function createzip(glyphs) {
 
     let zip = new JSZip();
     let folder = zip.folder("transmediale_geneva");
+
+    let uppercase = folder.folder("uppercase");
+    let lowercase = folder.folder("lowercase");
+    let extended = folder.folder("extended");
 
     glyphs.forEach(glyph => {
 
@@ -56,15 +60,31 @@ function createzip(glyphs){
             bounds: 'content'
         });
 
-        folder.file(glyph.char+".svg", file, {
-            base64: false
-        });
+        if (glyph.char.length === 1 && glyph.char == glyph.char.toUpperCase()) {
+
+            uppercase.file(glyph.char + ".svg", file, {
+                base64: false
+            });
+
+        } else if (glyph.char.length === 1 && glyph.char == glyph.char.toLowerCase()) {
+
+            lowercase.file(glyph.char + ".svg", file, {
+                base64: false
+            });
+
+        } else {
+
+            extended.file(glyph.char + ".svg", file, {
+                base64: false
+            });
+
+        }
 
     })
 
     zip.generateAsync({
         type: "blob"
-    }).then(function (content) {
+    }).then(function(content) {
         saveAs(content, "transmediale_geneva.zip");
     });
 

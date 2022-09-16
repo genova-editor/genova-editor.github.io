@@ -8,8 +8,15 @@ import {
 import {
     exportglyphs
 } from './export.js';
-import { tooltrace } from './tool-trace.js';
-import { toolanchor } from './tool-anchor.js';
+import {
+    exportotf
+} from './otf.js';
+import {
+    tooltrace
+} from './tool-trace.js';
+import {
+    toolanchor
+} from './tool-anchor.js';
 
 // VARIABLES
 
@@ -24,5 +31,6 @@ export function buildui(glyphs) {
     tooltrace(glyphs);
     toolanchor(glyphs);
     exportglyphs(glyphs);
+    exportotf(glyphs);
 
 }

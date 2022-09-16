@@ -7,6 +7,7 @@ import {
 function importAll(r) {
     return r.keys().map(r);
 }
+
 function importNames(r) {
     return r.keys();
 }
@@ -14,20 +15,17 @@ function importNames(r) {
 // VARIABLES
 
 let svgs = importAll(require.context('../glyphs/', true, /\.(svg)$/));
-svgs = svgs.slice(0,Math.ceil(svgs.length / 2));
+svgs = svgs.slice(0, Math.ceil(svgs.length / 2));
 
 let names = importNames(require.context('../glyphs/', true, /\.(svg)$/));
-names = names.slice(0,Math.ceil(names.length / 2));
+names = names.slice(0, Math.ceil(names.length / 2));
 
-names.forEach((n,id) => {
+names.forEach((n, id) => {
 
     let s = n.substring(2, n.length - 4);
-    names[id] = s
+    names[id] = s;
 
 })
-
-console.log(names);
-
 
 const scale = constables().scale;
 const parent = document.getElementById('glyphs');
@@ -48,7 +46,7 @@ export function buildglyphs() {
 
 function buildcanvas() {
 
-    svgs.forEach((glyph,id) => {
+    svgs.forEach((glyph, id) => {
 
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
@@ -139,7 +137,7 @@ function removemask() {
 
 function getbounds() {
 
-    glyphs.forEach((glyph,id) => {
+    glyphs.forEach((glyph, id) => {
 
         glyphs[id].bounds = {};
 

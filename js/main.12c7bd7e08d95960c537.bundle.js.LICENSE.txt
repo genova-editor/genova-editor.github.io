@@ -41,3 +41,5 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  * created by Marijn Haverbeke and released under an MIT license.
  *
  */
+
+/*! https://mths.be/codepointat v0.2.0 by @mathias */

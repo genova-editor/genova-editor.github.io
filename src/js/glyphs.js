@@ -12,6 +12,8 @@ function importNames(r) {
     return r.keys();
 }
 
+const ToDecimal = hex => parseInt(hex, 16);
+
 // VARIABLES
 
 let svgs = importAll(require.context('../glyphs/', true, /\.(svg)$/));
@@ -48,6 +50,9 @@ function buildcanvas() {
 
     svgs.forEach((glyph, id) => {
 
+        let unicode = ToDecimal(names[id]);
+        let name = String.fromCharCode(unicode);
+
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
 
@@ -62,10 +67,13 @@ function buildcanvas() {
             ctx: ctx,
             scope: c,
             cap: 'square',
-            char: names[id],
+            char: name,
+            name: names[id],
+            unicode: unicode,
             offsetPaths: [],
             bounds: {},
-            trace: []
+            trace: [],
+            parameter: {}
         }
 
         glyphs.push(list);
@@ -94,6 +102,15 @@ function drawsvg() {
             glyph.bounds.width = glyph.path.bounds.width * scale;
             glyph.bounds.height = glyph.path.bounds.height * scale;
 
+            glyph.bounds.left = glyph.path.bounds.x * scale;
+            glyph.bounds.right = (glyph.path.bounds.width - glyph.path.bounds.y) * scale;
+
+            if (glyph.path.children.length > 1) {
+                glyph.path.children[0].remove();
+            }
+
+            glyph.bounds.left = glyph.path.bounds.left * scale;
+            glyph.bounds.right = glyph.bounds.width - glyph.path.bounds.right * scale;
 
 
             glyph.path.children.forEach(path => {

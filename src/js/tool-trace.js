@@ -119,6 +119,7 @@ function list(glyphs) {
         })
 
         glyph.path.fullySelected = false;
+        glyph.parameter.trace = size;
 
     })
 
@@ -136,7 +137,7 @@ function trace(path) {
     while (i < l) {
 
         let s = size / 2 * (i / l + (1 - i / l) * taper);
-        let o = s * offset - s*0.9;
+        let o = s * offset - s * 0.9;
 
         let p = path.getPointAt(i);
 
@@ -196,11 +197,11 @@ function createshape(s, p) {
 
     } else if (shapeform === 'star') {
 
-        shape = new paper.Path.Star(p, 8, s*1.2, s*0.2);
+        shape = new paper.Path.Star(p, 8, s * 1.2, s * 0.2);
 
     }
 
-    shape.scale(1 * compress, (1- compress) * 1 );
+    shape.scale(1 * compress, (1 - compress) * 1);
     shape.rotate(rotate);
 
     return shape;
@@ -220,6 +221,8 @@ function cleartrace(glyphs) {
             })
 
         })
+
+        glyph.trace.splice(0, glyph.trace.length);
 
     })
 

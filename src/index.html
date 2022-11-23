@@ -19,7 +19,7 @@
 
                 <section>
                     <label for="stroke-offset">width</label><br>
-                    <input type="range" id="stroke-offset" name="stroke-offset" min="0" max="100" value="2">
+                    <input type="range" id="stroke-offset" name="stroke-offset" min="0" max="100" value="0">
                 </section>
 
                 <h2>stroke cap style</h2>
@@ -41,7 +41,7 @@
                 <section>
 
                     <label for="trace-size">trace size</label><br>
-                    <input type="range" id="trace-size" name="trace-size" min="1" max="100" value="30">
+                    <input type="range" id="trace-size" name="trace-size" min="1" max="200" value="80">
 
                     <label for="trace-offset">trace offset</label><br>
                     <input type="range" id="trace-offset" name="trace-offset" min="0" max="300" value="50">
@@ -84,7 +84,7 @@
                         star
                     </button>
                 </section>
-                
+
 
 
                 <h2>transform anchor handles</h2>
@@ -102,6 +102,12 @@
 
 
                 <h2>export options</h2>
+
+                <section class="checkbox">
+                    <label for="overlap">remove overlap</label>
+                    <input type="checkbox" id="overlap" checked></input>
+                    
+                </section>
 
                 <section>
                     <button type="button" id="export-svg">

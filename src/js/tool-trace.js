@@ -4,7 +4,7 @@ import {
     metrics
 } from './metrics.js';
 
-let size = 30;
+let size = 80;
 let offset = 0.5;
 let compress = 0.5;
 let rotate = 0;
@@ -12,9 +12,12 @@ let taper = 1;
 let anchor = 0;
 let shapeform = 'circle';
 
+let compensation = true;
+
 export function tooltrace(glyphs) {
 
     addevents(glyphs);
+    list(glyphs);
 
 }
 
@@ -147,6 +150,22 @@ function trace(path) {
         circles.push(circle);
 
         i += s + o + 1;
+
+    }
+
+    if (compensation) {
+
+        i = l;
+
+        let s = size / 2 * (i / l + (1 - i / l) * taper);
+        let o = s * offset - s * 0.9;
+
+        let p = path.getPointAt(i);
+
+        var circle = createshape(s, p);
+        circle.fillColor = 'black';
+
+        circles.push(circle);
 
     }
 

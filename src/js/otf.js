@@ -3,8 +3,10 @@ import UtfString from 'utfstring';
 
 import moment from 'moment';
 
+const ToDecimal = hex => parseInt(hex, 16);
+
 import {
-    metrics
+    getmetrics
 } from './metrics.js';
 
 import {
@@ -12,6 +14,9 @@ import {
 } from './base';
 
 const scale = constables().scale;
+const pathscale = 2;
+
+let removeoverlap = true;
 
 
 export function exportotf(glyphs) {
@@ -25,7 +30,17 @@ function routes(glyphs) {
     let button = document.getElementById('export-otf');
     button.addEventListener('click', () => {
 
-        buildotf(glyphs);
+        document.body.classList.add('generating');
+        setTimeout(function() {
+            buildotf(glyphs);
+        }, 100);
+
+    })
+
+    let overlapradio = document.getElementById('overlap');
+    overlapradio.addEventListener('click', () => {
+
+        removeoverlap = overlapradio.checked;
 
     })
 
@@ -34,6 +49,24 @@ function routes(glyphs) {
 function buildotf(glyphs) {
 
     let glyphlist = [];
+
+    let notdefGlyph = new opentype.Glyph({
+        name: '.notdef',
+        unicode: 0,
+        advanceWidth: 280,
+        path: new opentype.Path()
+    });
+
+    glyphlist.push(notdefGlyph);
+
+    let space = new opentype.Glyph({
+        name: 'space',
+        unicode: ToDecimal("0020"),
+        advanceWidth: 280,
+        path: new opentype.Path()
+    });
+
+    glyphlist.push(space);
 
     glyphs.forEach(glyph => {
 
@@ -45,7 +78,7 @@ function buildotf(glyphs) {
 
     const font = new opentype.Font({
         familyName: 'Genova',
-        styleName: 'Trace '+datename,
+        styleName: 'Trace ' + datename,
         unitsPerEm: 1000,
         ascender: 800,
         descender: -200,
@@ -53,37 +86,58 @@ function buildotf(glyphs) {
     });
     font.download();
 
+    document.body.classList.remove('generating');
+
 }
 
 function buildglyph(glyph) {
 
     let p = new opentype.Path();
+    let metrics = getmetrics(glyph.char);
+    let paths = [];
 
-    glyph.trace.forEach(group => {
+    if (removeoverlap) {
 
-        group.forEach(path => {
+        glyph.trace.forEach(group => {
 
-            let lb = glyph.bounds.left / scale;
+            if (group.length > 0) {
 
-            let segments = collectsegments(path);
-            convertpath(path, p, lb);
+                Array.prototype.push.apply(paths, filteroverlap(group));
+
+            }
 
         })
 
-    })
+    } else {
 
-    let unicode = undefined;
+        glyph.trace.forEach(group => {
 
-    if (glyph.char.length == 1) {
+            if (group.length > 0) {
 
-        unicode = glyph.char.codePointAt(0)
+                Array.prototype.push.apply(paths, group);
+
+            }
+
+        })
 
     }
 
+
+
+
+    paths.forEach(path => {
+
+        let lb = glyph.parameter.trace / 2;
+
+        convertpath(path, p, lb, glyph.parameter.trace / 2);
+
+    })
+
+
     let g = new opentype.Glyph({
-        name: glyph.name,
+        name: glyph.char,
         unicode: glyph.unicode,
-        advanceWidth: glyph.bounds.width / scale + glyph.parameter.trace * scale,
+        advanceWidth: metrics.width + glyph.parameter.trace,
         path: p
     });
 
@@ -91,107 +145,91 @@ function buildglyph(glyph) {
 
 }
 
-function collectsegments(paths) {
+function filteroverlap(group) {
 
-    let list = [];
+    let overlap = [];
 
-    if (typeof paths.segments != "undefined") {
+    if (group.length) {
 
-        paths.segments.forEach(s => {
+        let u = group[0];
 
-            list.push(s);
+        for (let i = 1; i < group.length; i++) {
 
-        })
+            if (group[i].intersects(u) && !u.hasChildren()) {
 
-    }
+                let t = u;
 
-    if (typeof paths.children != "undefined") {
+                u = group[i].unite(t, {
+                    insert: false
+                });
 
-        paths.children.forEach(c1 => {
+            } else {
 
-            if (typeof c1.segments != "undefined") {
+                if (u.hasChildren()) {
 
-                c1.segments.forEach(s => {
+                    u.children.forEach(c => {
 
-                    list.push(s);
+                        overlap.push(c);
 
-                })
+                    })
 
-            }
+                } else {
 
-            if (typeof c1.children != "undefined") {
-
-                c1.children.forEach(c2 => {
-
-                    if (typeof c2.segments != "undefined") {
-
-                        c2.segments.forEach(s => {
-
-                            list.push(s);
-
-                        })
-
-                    }
-
-                    if (typeof c2.children != "undefined") {
-
-                        c2.children.forEach(c3 => {
-
-                            if (typeof c3.segments != "undefined") {
-
-                                c3.segments.forEach(s => {
-
-                                    list.push(s);
-
-                                })
-
-                            }
+                    overlap.push(u);
 
 
-                        })
-
-                    }
-
-
-                })
+                }
+                u = group[i];
 
             }
 
+        }
+
+        if (u.hasChildren()) {
+
+            u.children.forEach(c => {
+
+                overlap.push(c);
+
+            })
+
+        } else {
+
+            overlap.push(u);
 
 
-        })
+        }
 
     }
 
-    return list;
+    return overlap;
 
 }
 
-function convertpath(paths, p, lb) {
+function convertpath(paths, p, lb, trace) {
 
-    let offset = 525;
-    let scale = 2.06;
+    let offset = 1000 + trace;
 
-    let xb = Math.round(paths.segments[0].point.x + lb);
-    let yb = Math.round(paths.segments[0].point.y * -1 + offset);
+    let xb = Math.round(paths.segments[0].point.x * pathscale + lb);
+    let yb = Math.round(paths.segments[0].point.y * pathscale * -1 + offset);
 
-    let x1b = Math.round(paths.segments[0].handleOut.x * -1);
-    let y1b = Math.round(paths.segments[0].handleOut.y * -1);
+    let x1b = Math.round(paths.segments[0].handleOut.x * pathscale * -1);
+    let y1b = Math.round(paths.segments[0].handleOut.y * pathscale * -1);
 
     for (let id = 0; id < paths.segments.length; id++) {
 
         let segment = paths.segments[id];
 
         // handle In
-        let x1 = Math.round(segment.handleOut.x);
-        let y1 = Math.round(segment.handleOut.y * -1);
+        let x1 = Math.round(segment.handleOut.x * pathscale);
+        let y1 = Math.round(segment.handleOut.y * pathscale * -1);
         // handle Out
-        let x2 = Math.round(segment.handleIn.x);
-        let y2 = Math.round(segment.handleIn.y * -1);
+        let x2 = Math.round(segment.handleIn.x * pathscale);
+        let y2 = Math.round(segment.handleIn.y * pathscale * -1);
 
         // Point
-        let x = Math.round(segment.point.x + lb);
-        let y = Math.round(segment.point.y * -1 + offset);
+        let x = Math.round(segment.point.x * pathscale + lb);
+        let y = Math.round(segment.point.y * pathscale * -1 + offset);
 
         if (id == 0) {
 
@@ -210,18 +248,18 @@ function convertpath(paths, p, lb) {
                 x1b = x2 * -1;
                 y1b = y2 * -1;
                 // handle Out
-                x2 = Math.round(paths.segments[0].handleIn.x * -1);
-                y2 = Math.round(paths.segments[0].handleIn.y * -1);
+                x2 = Math.round(paths.segments[0].handleIn.x * pathscale * -1);
+                y2 = Math.round(paths.segments[0].handleIn.y * pathscale * -1);
 
                 xb = x;
                 yb = y;
 
                 // Point
-                x = Math.round(paths.segments[0].point.x + lb);
-                y = Math.round(paths.segments[0].point.y * -1 + offset);
+                x = Math.round(paths.segments[0].point.x * pathscale + lb);
+                y = Math.round(paths.segments[0].point.y * pathscale * -1 + offset);
 
                 p.bezierCurveTo(xb + x1b, yb + y1b, x2 + x, y2 + y, x, y);
-                
+
                 p.closePath();
             }
 

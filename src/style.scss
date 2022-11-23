@@ -55,6 +55,36 @@ body * {
 }
 
 /*------------------------------------*\
+  WAIT
+\*------------------------------------*/
+
+body.generating{
+    overflow: hidden;
+    cursor: wait;
+    *{
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    .waiting{
+        display:block;
+
+    }
+    ::after{
+        position: fixed;
+        width:auto;
+        height:1rem;
+        padding:1rem;
+        top:50vh;
+        left:50vw;
+        transform:translateX(-50%) translateY(-50%);
+        background-color:gray;
+        border-radius: 0.2rem;
+        opacity: 1;
+        content:'Generating OTF';
+    }
+}
+
+/*------------------------------------*\
   UI
 \*------------------------------------*/
 
@@ -97,6 +127,16 @@ body * {
     input {
         width: 100%;
         padding:0.5rem 0;
+    }
+    section.checkbox{
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+        padding:0.5rem;
+        input{
+            width: 0.8rem;
+            height:0.8rem;
+        }
     }
     button{
         width:100%;

@@ -1,7 +1,9 @@
 import * as paper from 'paper';
 import {
     constables,
-    resize
+    resize,
+    glyphorder,
+    basemetrics
 } from './base';
 
 function importAll(r) {
@@ -30,6 +32,7 @@ names.forEach((n, id) => {
 })
 
 const scale = constables().scale;
+const unicodelist = glyphorder();
 const parent = document.getElementById('glyphs');
 
 let glyphs = [];
@@ -46,12 +49,21 @@ export function buildglyphs() {
 
 }
 
+function unicode2name(unicode){
+
+    let u = unicodelist.unicode.indexOf(unicode);
+    let name = unicodelist.name[u];
+    
+    return name;
+
+}
+
 function buildcanvas() {
 
     svgs.forEach((glyph, id) => {
 
         let unicode = ToDecimal(names[id]);
-        let name = String.fromCharCode(unicode);
+        let name = unicode2name(names[id]);
 
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
@@ -117,7 +129,7 @@ function drawsvg() {
 
                 path.style = {
                     strokeColor: "black",
-                    strokeWidth: "2",
+                    strokeWidth: "0",
                     strokeCap: "square"
                 };
 

@@ -51,6 +51,16 @@ export function buildglyphs() {
 
 function unicode2name(unicode){
 
+    if (unicode === 'transversale'){
+
+        return unicode;
+
+    } else if (unicode === '25CB'){
+
+        return 'whiteCircle';
+
+    }
+    
     let u = unicodelist.unicode.indexOf(unicode);
     let name = unicodelist.name[u];
     

@@ -2430,7 +2430,18 @@ export function getmetrics(char) {
         width: 600,
         lsb: 0,
         rsb: 0
-    }]
+    }, {
+        name: "transversale",
+        width: 951,
+        lsb: 20,
+        rsb: 20
+    }, {
+        name: "whiteCircle",
+        width: 772,
+        lsb: 20,
+        rsb: 20
+    }
+]
 
     const glyph = metrics.find(({ name }) => name === char);
 

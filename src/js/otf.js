@@ -245,8 +245,8 @@ function convertpath(paths, p, lb, trace) {
 
             if (id === paths.segments.length - 1) {
 
-                x1b = x2 * -1;
-                y1b = y2 * -1;
+                x1b = Math.round(segment.handleOut.x * pathscale);
+                y1b = Math.round(segment.handleOut.y * pathscale * -1);
                 // handle Out
                 x2 = Math.round(paths.segments[0].handleIn.x * pathscale * -1);
                 y2 = Math.round(paths.segments[0].handleIn.y * pathscale * -1);

@@ -129,7 +129,9 @@ function buildglyph(glyph) {
 
         let lb = glyph.parameter.trace / 2;
 
-        convertpath(path, p, lb, glyph.parameter.trace / 2);
+        if (path.segments.length) {
+            convertpath(path, p, lb, glyph.parameter.trace / 2);
+        }
 
     })
 

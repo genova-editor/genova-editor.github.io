@@ -175,7 +175,6 @@ function trace(path) {
 
 function anchors(path) {
 
-
     let circles = [];
 
     if (anchor > 0) {
